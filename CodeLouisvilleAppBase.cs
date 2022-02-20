@@ -288,16 +288,41 @@ namespace CodeLouisvilleLibrary
             return TryPrompt4MenuItem(prompt, menu.MenuItems, out menuSelection, maxAttempts);
         }
 
-        public static void Animate(string[] parts, int pause = 500)
+        public static void Animate(string[] parts, int pause = 500, int repeat = 1, bool clearWhenComplete = true, bool slide = false)
         {
-            string prev = "";
-            for(int i = 0; i < parts.Length; i++)
+            int Left = Console.CursorLeft;
+            bool isCursorVisible = Console.CursorVisible;
+            Console.CursorVisible = false;
+            try
             {
-                Console.SetCursorPosition(Console.CursorLeft - prev.Length, Console.CursorTop);
-                Console.Write(parts[i].PadRight(prev.Length));
-                prev = parts[i].PadRight(prev.Length);
+                string prev = "";
+                for (int r = 0; r < repeat; r++)
+                {
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        Console.SetCursorPosition(Console.CursorLeft - prev.Length, Console.CursorTop);
+                        if (slide && prev.Length > 0)
+                        {
+                            Console.Write(" ".PadLeft(prev.Length));
+                            Console.SetCursorPosition(Console.CursorLeft + prev.Length, Console.CursorTop);
+                        }
+                        Console.Write(parts[i].PadRight(prev.Length));
+                        prev = parts[i].PadRight(prev.Length);
 
-                Thread.Sleep(pause);
+                        Thread.Sleep(pause);
+                    }
+                }
+
+                if (clearWhenComplete)
+                {
+                    Console.SetCursorPosition(Console.CursorLeft - prev.Length, Console.CursorTop);
+                    Console.Write(" ".PadLeft(prev.Length));
+                    Console.SetCursorPosition(Left, Console.CursorTop);
+                }
+            }
+            finally
+            {
+                Console.CursorVisible = isCursorVisible;
             }
         }
 
