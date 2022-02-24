@@ -30,8 +30,10 @@ namespace CodeLouisvilleLibrary.Serialization
                     items = await JsonSerializer.DeserializeAsync<List<T>>(stream) ?? new List<T>();
                 }
 
-                if(item.ID <= 0)
+                if (item.ID <= 0)
                     item.ID = items.Count > 0 ? items.Max(i => i.ID) + 1 : 1;
+                else
+                    items.RemoveAll(i => i.ID == item.ID);
 
                 items.Add(item);
 
