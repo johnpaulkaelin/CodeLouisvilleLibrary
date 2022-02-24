@@ -45,7 +45,7 @@ namespace CodeLouisvilleLibrary.Serialization
             return item;
         }
 
-        public async Task<IEnumerable<T>?> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             if (File.Exists(FileName))
             {
@@ -57,6 +57,12 @@ namespace CodeLouisvilleLibrary.Serialization
             {
                 return null;
             }
+        }
+
+        public async Task<T> GetByID(int ID)
+        {
+            var list = await GetAllAsync();
+            return list.FirstOrDefault(e => e.ID == ID);
         }
 
     }
