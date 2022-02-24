@@ -16,7 +16,7 @@ namespace CodeLouisvilleLibrary.Serialization
             FileName = fileName;
         }
 
-        public async Task<T> CreateAsync(T item)
+        public async Task<T> SaveAsync(T item)
         {
             List<T> items = new List<T>();
 
