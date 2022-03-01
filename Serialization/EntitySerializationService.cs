@@ -61,11 +61,44 @@ namespace CodeLouisvilleLibrary.Serialization
             }
         }
 
+        public async Task DeleteAsync(int ID)
+        {
+            await DeleteAsync(await GetByID(ID));
+        }
+
+        public async Task DeleteAsync(T item)
+        {
+            if (item != null)
+            {
+                List<T> items = new List<T>();
+
+                if (!Directory.Exists(Path.GetDirectoryName(FileName)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(FileName));
+
+                using (Stream stream = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+                {
+                    if (File.Exists(FileName) && stream.Length > 0)
+                    {
+                        items = await JsonSerializer.DeserializeAsync<List<T>>(stream) ?? new List<T>();
+                    }
+
+                    items.RemoveAll(i => i.ID == item.ID);
+
+                    stream.SetLength(0); // rewrite instead of appending to the stream
+
+                    var options = new JsonSerializerOptions { WriteIndented = true };
+
+                    await JsonSerializer.SerializeAsync(stream, items, options);
+                }
+            }
+        }
+
         public async Task<T> GetByID(int ID)
         {
             var list = await GetAllAsync();
             return list.FirstOrDefault(e => e.ID == ID);
         }
+
 
     }
 }
